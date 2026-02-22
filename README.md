@@ -1,6 +1,6 @@
 # SeedBot: a self-evolving personal assistant
 
-A minimal extensible harness that turns [Codex](https://openai.com/codex/) into a personal assistant.
+A bootstrapper to turns [Codex](https://openai.com/codex/) into a personal assistant.
 
 SeedBot starts with only two abilities: **coding** and **terminal input**. From there, it can build new capabilities upon requests.
 
@@ -12,13 +12,12 @@ Inspired by [OpenClaw](https://github.com/openclaw/openclaw) and [nanobot](https
 
 - [x] Cross compare with nanobot.
 - [x] Add timeout to prevent blocking calls.
-- [ ] Simplify `main.sh` under 50 lines without sacraficing readability and extensibility.
+- [ ] Support non-blocking launch of codex while still stick with <100 lines of code.
 
 ## Prerequisites
 
 - Preconfigured Codex CLI (GPT-5.3-Codex recommended)
 - macOS, Linux, or WSL with Bash
-- `timeout` command (GNU coreutils)
 
 ## Quick Start
 
@@ -29,7 +28,7 @@ brew install coreutils
 alias timeout=gtimeout
 ```
 
-Run SeedBot:
+Run SeedBot (add `-v` if you want to view codex execution details):
 
 ```bash
 ./main.sh
