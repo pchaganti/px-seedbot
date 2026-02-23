@@ -9,7 +9,6 @@ for arg in "$@"; do
 done
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-HOOK_TIMEOUT_SECONDS=300
 ERROR_LOG="$ROOT_DIR/logs/errors.log"
 LOCK_DIR="$ROOT_DIR/memory/.lock"
 
@@ -38,7 +37,7 @@ run_with_timeout() { # $1=timeout_secs, rest=command...
 process_response() { # $1=source_name, $2=user_query, $3=codex_response
   _lock
   if [[ -x "$ROOT_DIR/memory/save.sh" ]]; then
-    run_with_timeout "$HOOK_TIMEOUT_SECONDS" "$ROOT_DIR/memory/save.sh" "$1" "$2" "$3" 2>>"$ERROR_LOG"
+    run_with_timeout 300 "$ROOT_DIR/memory/save.sh" "$1" "$2" "$3" 2>>"$ERROR_LOG"
   fi
   printf 'USER: %s\nASSISTANT: %s\n' "$2" "$3" >> "$ROOT_DIR/memory/context.md"
   _unlock
@@ -76,14 +75,12 @@ printf 'assistant> type a message, or Ctrl-C to quit.\n'
 while true; do
   for plugin in "$ROOT_DIR/inputs.d"/*; do
     [[ -f "$plugin" && -x "$plugin" ]] || continue
-    (
-      msg="$(run_with_timeout "$HOOK_TIMEOUT_SECONDS" "$plugin" 2>>"$ERROR_LOG")" || exit 0
-      [[ -z "$msg" ]] && exit 0
-      handle_message "$(basename "$plugin")" "$msg"
-    ) &
+    msg="$(run_with_timeout 30 "$plugin" 2>>"$ERROR_LOG")" || continue
+    [[ -z "$msg" ]] && continue
+    handle_message "$(basename "$plugin")" "$msg" &
   done
 
-  if IFS= read -r -t 2 line && [[ -n "$line" ]]; then
+  if IFS= read -r -t 1 line && [[ -n "$line" ]]; then
     handle_message "terminal" "$line" &
   fi
 done
