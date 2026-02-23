@@ -45,8 +45,8 @@ process_response() { # $1=source_name, $2=user_query, $3=codex_response
 }
 
 run_codex() { # $1=user_message, $2=memory_text
-  local agent_file="$ROOT_DIR/workspace/agent_$$.md"
-  printf '# Agent %s\n- request: %s\n' "$$" "${1:0:200}" > "$agent_file"
+  local agent_file="$ROOT_DIR/workspace/agent_$BASHPID.md"
+  printf '# Agent %s\n- request: %s\n' "${1:0:200}" > "$agent_file"
 
   local payload="SYSTEM_PROMPT:\n$(cat "$ROOT_DIR/system.md")\n\nMEMORY_CONTEXT:\n$2\n\nAGENT_FILE:\n$agent_file\n\nUSER_INSTRUCTION:\n$1\n"
   if (( VERBOSE )); then
